@@ -8,6 +8,7 @@ package br.SupermercadoCorreia.Estoque.Forms;
 import br.SupermercadoCorreia.Estoque.Bean.Product;
 import br.SupermercadoCorreia.Estoque.DAO.ProductDAO;
 import br.SupermercadoCorreia.Estoque.JDialogs.RefreshProducts_JD;
+import br.SupermercadoCorreia.Estoque.JDialogs.SelectTypeUse_JD;
 import br.SupermercadoCorreia.Estoque.JDialogs.setAmountInPOC;
 import com.sun.glass.events.KeyEvent;
 import funcoes.Util;
@@ -251,6 +252,9 @@ public class PointOfControl extends javax.swing.JFrame {
         if (evt.getKeyCode() == KeyEvent.VK_ADD) {
             setarQuantidade(jTable1.getSelectedRow());
         }
+        if (evt.getKeyCode() == KeyEvent.VK_F5) {
+            finalizar();
+        }
     }//GEN-LAST:event_codetxtKeyPressed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
@@ -379,26 +383,34 @@ public class PointOfControl extends javax.swing.JFrame {
     }
 
     private void finalizar() {
-        String cd;
-        double q;
-        int type=1;
-        String desc;
-        for (int x = 0; x < jTable1.getRowCount(); x++) {
-            cd = (String) jTable1.getValueAt(x, 0);
-            desc = (String) jTable1.getValueAt(x, 1);
-            q = (double) jTable1.getValueAt(x, 3);
-            if (new ProductDAO().already(cd)) {
-                if (!new ProductDAO().update_type_use(cd, q, type)){
-                    JOptionPane.showMessageDialog(null, "Erro ao tentar fazer update no banco de dados.","ERRO",JOptionPane.ERROR_MESSAGE);
-                    return;
+        new Thread(() -> {
+            SelectTypeUse_JD jd = new SelectTypeUse_JD(this, true);
+            jd.setVisible(true);
+            if (jd.getOp() == -1) {
+                return;
+            }
+            String cd;
+            double q;
+            int type = jd.getOp();
+            String desc;
+            while (jTable1.getRowCount() > 0) {
+                cd = (String) jTable1.getValueAt(0, 0);
+                desc = (String) jTable1.getValueAt(0, 1);
+                q = (double) jTable1.getValueAt(0, 3);
+                if (new ProductDAO().already(cd)) {
+                    if (!new ProductDAO().update_type_use(cd, q, type)) {
+                        JOptionPane.showMessageDialog(null, "Erro ao tentar fazer update no banco de dados.", "ERRO", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    if (!new ProductDAO().insert_type_use(cd, desc, q, type)) {
+                        JOptionPane.showMessageDialog(null, "Erro ao tentar fazer insert no banco de dados.", "ERRO", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                 }
-            }else{
-                if (!new ProductDAO().insert_type_use(cd, desc, q, type)){
-                    JOptionPane.showMessageDialog(null, "Erro ao tentar fazer insert no banco de dados.","ERRO",JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+                tb.removeRow(0);
             }
         }
-        tb.setRowCount(0);
+        ).start();
     }
 }

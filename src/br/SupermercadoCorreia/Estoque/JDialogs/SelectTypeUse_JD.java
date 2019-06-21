@@ -10,7 +10,8 @@ package br.SupermercadoCorreia.Estoque.JDialogs;
  * @author User
  */
 public class SelectTypeUse_JD extends javax.swing.JDialog {
-
+    
+    private int op = -1;
     /**
      * Creates new form SelectTypeUse_JD
      */
@@ -120,6 +121,7 @@ public class SelectTypeUse_JD extends javax.swing.JDialog {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
@@ -189,18 +191,36 @@ public class SelectTypeUse_JD extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
     private void consumo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setOp(1);
+        dispose();
     }
 
     private void padaria() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setOp(2);
+        dispose();
     }
 
     private void quebra() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setOp(4);
+        dispose();
     }
 
     private void troca() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setOp(3);
+        dispose();
+    }
+
+    /**
+     * @return the op
+     */
+    public int getOp() {
+        return op;
+    }
+
+    /**
+     * @param op the op to set
+     */
+    public void setOp(int op) {
+        this.op = op;
     }
 }
