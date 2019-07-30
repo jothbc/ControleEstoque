@@ -124,7 +124,7 @@ public class ProductDAO {
 
     public boolean removeAll() {
         con = ConnectionFactoryMySQL.getConnection();
-        sql = "DELETE FROM product";
+        sql = "TRUNCATE TABLE product";
         try {
             stmt = con.prepareStatement(sql);
             stmt.execute();
