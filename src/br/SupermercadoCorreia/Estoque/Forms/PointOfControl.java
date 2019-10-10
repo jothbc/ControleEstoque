@@ -5,16 +5,20 @@
  */
 package br.SupermercadoCorreia.Estoque.Forms;
 
+import EstoqueFrms.Menu;
 import br.SupermercadoCorreia.Estoque.Bean.Product;
 import br.SupermercadoCorreia.Estoque.DAO.ProductDAO;
+import br.SupermercadoCorreia.Estoque.JDialogs.CodeMovJD;
 import br.SupermercadoCorreia.Estoque.JDialogs.RefreshProducts_JD;
 import br.SupermercadoCorreia.Estoque.JDialogs.SelectTypeUse_JD;
 import br.SupermercadoCorreia.Estoque.JDialogs.setAmountInPOC;
 import com.sun.glass.events.KeyEvent;
 import funcoes.Util;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -35,7 +39,7 @@ public class PointOfControl extends javax.swing.JFrame {
         this.setExtendedState(PointOfControl.MAXIMIZED_BOTH);
         tb = (DefaultTableModel) jTable1.getModel();
         products = new ArrayList<>();
-        statuslbl.setText("carregando...");
+        lbl_status.setText("carregando...");
         carregarProdutosDoMysqlEmVariavel();
     }
 
@@ -55,12 +59,13 @@ public class PointOfControl extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         desctxt = new javax.swing.JLabel();
         codetxt = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        statuslbl = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        lbl_status = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        atualizaProdutosBtn = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
 
@@ -114,42 +119,59 @@ public class PointOfControl extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Código");
 
-        desctxt.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        desctxt.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         desctxt.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         desctxt.setText("Descrição");
 
         codetxt.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         codetxt.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        codetxt.setBorder(null);
+        codetxt.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         codetxt.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 codetxtKeyPressed(evt);
             }
         });
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("Finalizar F5");
-        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel3MouseClicked(evt);
+        lbl_status.setText("Pronto");
+
+        jButton1.setBackground(new java.awt.Color(255, 255, 255));
+        jButton1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jButton1.setText("Finalizar F5");
+        jButton1.setBorder(null);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
             }
         });
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel4.setText("Quantidade +");
-        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel4MouseClicked(evt);
+        atualizaProdutosBtn.setBackground(new java.awt.Color(255, 255, 255));
+        atualizaProdutosBtn.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        atualizaProdutosBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/1x/square-download.png"))); // NOI18N
+        atualizaProdutosBtn.setText("Atualizar Produtos");
+        atualizaProdutosBtn.setBorder(null);
+        atualizaProdutosBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                atualizaProdutosBtnActionPerformed(evt);
             }
         });
 
-        statuslbl.setText("Pronto");
+        jButton3.setBackground(new java.awt.Color(255, 255, 255));
+        jButton3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jButton3.setText("Quantidade +");
+        jButton3.setBorder(null);
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/1x/square-download.png"))); // NOI18N
-        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel2MouseClicked(evt);
+        jButton4.setBackground(new java.awt.Color(255, 255, 255));
+        jButton4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jButton4.setText("Buscar Cupom");
+        jButton4.setBorder(null);
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
             }
         });
 
@@ -160,27 +182,21 @@ public class PointOfControl extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(21, 21, 21)
-                                .addComponent(jLabel1))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel2)))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(desctxt, javax.swing.GroupLayout.DEFAULT_SIZE, 648, Short.MAX_VALUE)
-                            .addComponent(codetxt)))
+                        .addGap(21, 21, 21)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(codetxt))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(statuslbl, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(atualizaProdutosBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+                            .addComponent(lbl_status, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(desctxt, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE)))
+                .addGap(27, 27, 27)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
+                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -188,23 +204,27 @@ public class PointOfControl extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel1)
-                        .addComponent(codetxt, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(desctxt)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel2)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(statuslbl)))
-                .addContainerGap())
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(codetxt, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(atualizaProdutosBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lbl_status, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 18, Short.MAX_VALUE))
+                                    .addComponent(desctxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -219,7 +239,7 @@ public class PointOfControl extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 406, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -236,14 +256,6 @@ public class PointOfControl extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-        finalizar();
-    }//GEN-LAST:event_jLabel3MouseClicked
-
-    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-        setarQuantidade(jTable1.getSelectedRow());
-    }//GEN-LAST:event_jLabel4MouseClicked
 
     private void codetxtKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_codetxtKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -269,9 +281,33 @@ public class PointOfControl extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jTable1KeyPressed
 
-    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        finalizar();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void atualizaProdutosBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atualizaProdutosBtnActionPerformed
         atualizarBancoDeDados();
-    }//GEN-LAST:event_jLabel2MouseClicked
+    }//GEN-LAST:event_atualizaProdutosBtnActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        if (jTable1.getSelectedRow() >= 0) {
+            setarQuantidade(jTable1.getSelectedRow());
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        CodeMovJD jd = new CodeMovJD(null, true);
+        jd.setVisible(true);
+        if (!jd.getProducts().isEmpty()) {
+            for (Product p : jd.getProducts()) {
+                for (Product pp : products) {
+                    if (p.getCode().equals(pp.getCode())) {
+                        tb.addRow(new Object[]{pp.getCode(), pp.getDescription(), pp.getSale_value(), p.getAmount()});
+                    }
+                }
+            }
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -309,22 +345,27 @@ public class PointOfControl extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton atualizaProdutosBtn;
     private javax.swing.JTextField codetxt;
     private javax.swing.JLabel desctxt;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JLabel statuslbl;
+    private javax.swing.JLabel lbl_status;
     // End of variables declaration//GEN-END:variables
 
     private void setarQuantidade(int index) {
         setAmountInPOC jd = new setAmountInPOC(this, true);
         jd.setVisible(true);
+        if (jd.getAmount() > 500) {
+            JOptionPane.showMessageDialog(null, "A quantidade informada deve estar errada: " + jd.getAmount());
+            return;
+        }
         if (jd.getAmount() != -1) {
             jTable1.setValueAt(jd.getAmount(), index, 3);
             codetxt.setText("");
@@ -333,16 +374,34 @@ public class PointOfControl extends javax.swing.JFrame {
     }
 
     private void incluirNaTabela() {
-        if (!verificarCodigoBalanca(codetxt.getText())) {
-            qtd = 1;
+        if (!numerico(codetxt.getText())) {
+            buscar(codetxt.getText());
+        } else {
+            if (!verificarCodigoBalanca(codetxt.getText())) {
+                qtd = 1;
+            }
+            codetxt.setText(Long.toString(Long.parseLong(codetxt.getText())));
+            boolean add = false;
+            for (Product p : products) {
+                if (p.getCode().equals(codetxt.getText())) {
+                    tb.addRow(new Object[]{p.getCode(), p.getDescription(), p.getSale_value(), qtd});
+                    desctxt.setText(p.getDescription());
+                    add = true;
+                }
+            }
+            if (!add) {
+                int op = JOptionPane.showOptionDialog(null, "Produto não encontrado.\nTem certeza que o código esta correto?\nCaso a opção for SIM a busca sera atualizada.", "Código não encontrado", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+                if (op == JOptionPane.YES_OPTION) {
+                    atualizarBancoDeDados();
+                }
+            }
+
+            if (jTable1.getRowCount() > 0) {
+                Util.scroollAutoEnd(jTable1);
+            }
+            codetxt.setText("");
+            codetxt.requestFocus();
         }
-        products.stream().filter((p) -> (p.getCode().equals(codetxt.getText()))).forEachOrdered((p) -> {
-            tb.addRow(new Object[]{p.getCode(), p.getDescription(), p.getSale_value(), qtd});
-            desctxt.setText(p.getDescription());
-        });
-        Util.scroollAutoEnd(jTable1);
-        codetxt.setText("");
-        codetxt.requestFocus();
     }
 
     private boolean verificarCodigoBalanca(String cd) {
@@ -350,11 +409,12 @@ public class PointOfControl extends javax.swing.JFrame {
             String cd_, valor_;
             cd_ = cd.substring(4, 7);
             valor_ = cd.substring(7);
-            codetxt.setText(cd_);
+            codetxt.setText(Long.toString(Long.parseLong(cd_)));
             double valor = Double.parseDouble(valor_) / 1000.00;
             for (Product p : products) {
-                if (p.getCode().equals(cd_)) {
+                if (p.getCode().equals(codetxt.getText())) {
                     this.qtd = (double) valor / p.getSale_value();
+                    System.out.println(p.getSale_value());
                     break;
                 }
             }
@@ -364,9 +424,9 @@ public class PointOfControl extends javax.swing.JFrame {
     }
 
     private void carregarProdutosDoMysqlEmVariavel() {
-        statuslbl.setText("atualizando...");
+        lbl_status.setText("atualizando...");
         products = new ProductDAO().findAll();
-        statuslbl.setText("pronto!");
+        lbl_status.setText("pronto!");
     }
 
     private void removerLinha() {
@@ -377,8 +437,7 @@ public class PointOfControl extends javax.swing.JFrame {
     }
 
     private void atualizarBancoDeDados() {
-        RefreshProducts_JD jd = new RefreshProducts_JD(this, true);
-        jd.setVisible(true);
+        new RefreshProducts_JD(this, true).setVisible(true);
         carregarProdutosDoMysqlEmVariavel();
     }
 
@@ -386,31 +445,74 @@ public class PointOfControl extends javax.swing.JFrame {
         new Thread(() -> {
             SelectTypeUse_JD jd = new SelectTypeUse_JD(this, true);
             jd.setVisible(true);
-            if (jd.getOp() == -1) {
+            if (jd.getColumn() == null) {
                 return;
             }
-            String cd;
-            double q;
-            int type = jd.getOp();
-            String desc;
+            String code;
+            double amount;
+            String column = jd.getColumn();
+            String description;
+            if (column.equals(ProductDAO.EXCHANGE_TABLE)) {
+                lbl_status.setBackground(Color.GREEN);
+                lbl_status.setText("Atualizando");
+                products = new ProductDAO().getAllFB_Provider(products, new JProgressBar());
+                lbl_status.setText("Pronto");
+                lbl_status.setBackground(Color.WHITE);
+            }
+            List<String> list_string = new ArrayList<>();
             while (jTable1.getRowCount() > 0) {
-                cd = (String) jTable1.getValueAt(0, 0);
-                desc = (String) jTable1.getValueAt(0, 1);
-                q = (double) jTable1.getValueAt(0, 3);
-                if (new ProductDAO().already(cd)) {
-                    if (!new ProductDAO().update_type_use(cd, q, type)) {
+                code = (String) jTable1.getValueAt(0, 0);
+                description = (String) jTable1.getValueAt(0, 1);
+                amount = (double) jTable1.getValueAt(0, 3);
+                if (new ProductDAO().already(code)) {
+                    if (!new ProductDAO().update_type_use(code, amount, column)) {
                         JOptionPane.showMessageDialog(null, "Erro ao tentar fazer update no banco de dados.", "ERRO", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
+                    list_string.add(code);
                 } else {
-                    if (!new ProductDAO().insert_type_use(cd, desc, q, type)) {
+                    if (!new ProductDAO().insert_type_use(code, description, amount, column)) {
                         JOptionPane.showMessageDialog(null, "Erro ao tentar fazer insert no banco de dados.", "ERRO", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
+                    list_string.add(code);
                 }
+                new ProductDAO().insert_log_type_use(Menu.usuario ,code, description, amount, column);
                 tb.removeRow(0);
             }
+            if (column.equals(ProductDAO.EXCHANGE_TABLE)) {
+                String temp = "ULTIMOS FORNECEDORES\n\n";
+                for (String s : list_string) {
+                    for (Product p : products) {
+                        if (p.getCode().equals(s)) {
+                            temp += p.getDescription() + "     " + p.getProvider() + "\n";
+                            break;
+                        }
+                    }
+                }
+                JOptionPane.showMessageDialog(null, temp);
+            }
+
         }
         ).start();
+    }
+
+    private boolean numerico(String text) {
+        try {
+            long test = Long.parseLong(text);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private void buscar(String text) {
+        SearchProductJD jd = new SearchProductJD(null, true, text, products);
+        jd.setVisible(true);
+        if (jd.getProduct() != null) {
+            codetxt.setText(jd.getProduct().getCode());
+        } else {
+            codetxt.setText("");
+        }
     }
 }

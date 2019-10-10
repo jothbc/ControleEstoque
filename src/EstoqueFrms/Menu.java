@@ -5,24 +5,21 @@
  */
 package EstoqueFrms;
 
-import EstoqueFrms.Interacao.frmRobotEstoque;
-import EstoqueFrms.Interacao.frmRobotTest;
-import EstoqueFrms.Seletor.frmColor;
-import ModelBean.Usuario;
-import ModelDAO.UsuarioDAO;
+import br.SupermercadoCorreia.Estoque.Forms.ExchangeJF;
+import br.SupermercadoCorreia.Estoque.Forms.PointOfControl;
+import br.SupermercadoCorreia.Estoque.Forms.ProductsLaunchedJF;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.net.URL;
-import java.util.List;
 import javax.swing.ImageIcon;
-import javax.swing.JColorChooser;
-import javax.swing.SwingUtilities;
 
 /**
  *
  * @author User
  */
 public class Menu extends javax.swing.JFrame {
+
+    public static String usuario;
 
     /**
      * Creates new form Menu
@@ -33,17 +30,10 @@ public class Menu extends javax.swing.JFrame {
         initComponents();
         this.setExtendedState(Menu.MAXIMIZED_BOTH);
         atualUser.setText(user);
+        usuario = user;
         URL url = this.getClass().getResource("/Imagens/supermercado.png");
         Image imagemTitulo = Toolkit.getDefaultToolkit().getImage(url);
         this.setIconImage(imagemTitulo);
-        List<Usuario> usuarios = new UsuarioDAO().findAll();
-
-        frmBaixasLancar frm = new frmBaixasLancar(atualUser.getText());
-        jDesktopPane1.add(frm);
-        frm.show();
-
-        progressBar.setVisible(false);
-
     }
 
     public String getUser() {
@@ -65,28 +55,12 @@ public class Menu extends javax.swing.JFrame {
         atualUser = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        progressBar = new javax.swing.JProgressBar();
         jcr = new javax.swing.JLabel();
         jMenuBar2 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem10 = new javax.swing.JMenuItem();
-        jMenuItem15 = new javax.swing.JMenuItem();
-        jMenuItem16 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
-        jMenuItem13 = new javax.swing.JMenuItem();
-        jMenu3 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        jMenuItem7 = new javax.swing.JMenuItem();
-        jMenuItem8 = new javax.swing.JMenuItem();
-        jMenu5 = new javax.swing.JMenu();
-        jMenuItem9 = new javax.swing.JMenuItem();
-        jMenuItem6 = new javax.swing.JMenuItem();
-        jMenuItem11 = new javax.swing.JMenuItem();
-        jMenuItem14 = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem12 = new javax.swing.JMenuItem();
@@ -99,12 +73,12 @@ public class Menu extends javax.swing.JFrame {
             }
         });
 
-        jDesktopPane1.setBackground(new java.awt.Color(240, 240, 240));
+        jDesktopPane1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jPanel2.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
+        atualUser.setBackground(new java.awt.Color(255, 255, 255));
         atualUser.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        atualUser.setForeground(new java.awt.Color(255, 255, 255));
         atualUser.setText("Usuário");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -141,8 +115,8 @@ public class Menu extends javax.swing.JFrame {
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(90, 90, 90)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(50, Short.MAX_VALUE))
         );
 
@@ -150,7 +124,6 @@ public class Menu extends javax.swing.JFrame {
 
         jDesktopPane1.setLayer(jPanel2, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jDesktopPane1.setLayer(jPanel3, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jDesktopPane1.setLayer(progressBar, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jDesktopPane1.setLayer(jcr, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
@@ -160,8 +133,6 @@ public class Menu extends javax.swing.JFrame {
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jDesktopPane1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jcr, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -173,9 +144,6 @@ public class Menu extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDesktopPane1Layout.createSequentialGroup()
-                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
                     .addComponent(jcr, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
@@ -189,37 +157,6 @@ public class Menu extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jDesktopPane1)
         );
-
-        jMenu1.setText("Ferramentas");
-
-        jMenuItem10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/application_lightning.png"))); // NOI18N
-        jMenuItem10.setText("Gerar Log Troca");
-        jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem10ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem10);
-
-        jMenuItem15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/bullet_wrench.png"))); // NOI18N
-        jMenuItem15.setText("Mudar Tema");
-        jMenuItem15.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem15ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem15);
-
-        jMenuItem16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/color_wheel.png"))); // NOI18N
-        jMenuItem16.setText("Mudar Cor de Fundo");
-        jMenuItem16.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem16ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem16);
-
-        jMenuBar2.add(jMenu1);
 
         jMenu4.setText("Baixas");
 
@@ -242,102 +179,16 @@ public class Menu extends javax.swing.JFrame {
         });
         jMenu4.add(jMenuItem4);
 
-        jMenuItem13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/application_xp_terminal.png"))); // NOI18N
-        jMenuItem13.setText("Hacker Typer - Baixas");
-        jMenuItem13.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem13ActionPerformed(evt);
-            }
-        });
-        jMenu4.add(jMenuItem13);
-
-        jMenuBar2.add(jMenu4);
-
-        jMenu3.setText("Condicoes");
-
-        jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/tag_blue_add.png"))); // NOI18N
-        jMenuItem1.setText("Adicionar Condicao");
+        jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/application_form_magnify.png"))); // NOI18N
+        jMenuItem1.setText("Trocas");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem1ActionPerformed(evt);
             }
         });
-        jMenu3.add(jMenuItem1);
+        jMenu4.add(jMenuItem1);
 
-        jMenuItem2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/tag_blue_edit.png"))); // NOI18N
-        jMenuItem2.setText("Renomear Condicao");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
-            }
-        });
-        jMenu3.add(jMenuItem2);
-
-        jMenuBar2.add(jMenu3);
-
-        jMenu2.setText("Vencimentos");
-
-        jMenuItem7.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/date_next.png"))); // NOI18N
-        jMenuItem7.setText("Adicionar");
-        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem7ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem7);
-
-        jMenuItem8.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.ALT_MASK));
-        jMenuItem8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/date_magnify.png"))); // NOI18N
-        jMenuItem8.setText("Vencimentos Próximos");
-        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem8ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem8);
-
-        jMenuBar2.add(jMenu2);
-
-        jMenu5.setText("Estoque");
-
-        jMenuItem9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/application_form_magnify.png"))); // NOI18N
-        jMenuItem9.setText("Movimento Estoque");
-        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem9ActionPerformed(evt);
-            }
-        });
-        jMenu5.add(jMenuItem9);
-
-        jMenuItem6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/basket.png"))); // NOI18N
-        jMenuItem6.setText("Ultima Compra");
-        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem6ActionPerformed(evt);
-            }
-        });
-        jMenu5.add(jMenuItem6);
-
-        jMenuItem11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/chart_bar.png"))); // NOI18N
-        jMenuItem11.setText("Estoque Atual");
-        jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem11ActionPerformed(evt);
-            }
-        });
-        jMenu5.add(jMenuItem11);
-
-        jMenuItem14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/application_xp_terminal.png"))); // NOI18N
-        jMenuItem14.setText("Hacker Typer - Estoque");
-        jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem14ActionPerformed(evt);
-            }
-        });
-        jMenu5.add(jMenuItem14);
-
-        jMenuBar2.add(jMenu5);
+        jMenuBar2.add(jMenu4);
 
         jMenu6.setText("Usuario");
 
@@ -377,82 +228,22 @@ public class Menu extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
-        frmCondicaoAdd frm = new frmCondicaoAdd();
-        jDesktopPane1.add(frm);
-        frm.show();
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
-
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        // TODO add your handling code here:
-        frmCondicaoMod frm = new frmCondicaoMod();
-        jDesktopPane1.add(frm);
-        frm.show();
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
-
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        // TODO add your handling code here:
-        frmBaixasLancar frm = new frmBaixasLancar(atualUser.getText());
-        jDesktopPane1.add(frm);
-        frm.show();
+        PointOfControl p = new PointOfControl();
+        p.setVisible(true);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-        // TODO add your handling code here:
-        frmBaixasVisualizar frm = new frmBaixasVisualizar();
-        jDesktopPane1.add(frm);
-        frm.show();
+        new ProductsLaunchedJF().setVisible(true);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-        // TODO add your handling code here:
         frmUsuarios frm = new frmUsuarios();
         jDesktopPane1.add(frm);
         frm.show();
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
-    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-        // TODO add your handling code here:
-        frmUltimoFornecedor frm = new frmUltimoFornecedor();
-        jDesktopPane1.add(frm);
-        frm.show();
-    }//GEN-LAST:event_jMenuItem6ActionPerformed
-
-    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
-        // TODO add your handling code here:
-        frmVencimentoAdd frm = new frmVencimentoAdd();
-        jDesktopPane1.add(frm);
-        frm.show();
-    }//GEN-LAST:event_jMenuItem7ActionPerformed
-
-    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-        // TODO add your handling code here:
-        frmVencimentoProximo frm = new frmVencimentoProximo();
-        jDesktopPane1.add(frm);
-        frm.show();
-    }//GEN-LAST:event_jMenuItem8ActionPerformed
-
-    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
-        // TODO add your handling code here:
-        frmLogEstoque frm = new frmLogEstoque();
-        frm.setVisible(true);
-    }//GEN-LAST:event_jMenuItem9ActionPerformed
-
-    private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
-        // TODO add your handling code here:
-        frmGerarLogTroca frm = new frmGerarLogTroca();
-        frm.setVisible(true);
-    }//GEN-LAST:event_jMenuItem10ActionPerformed
-
-    private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
-        // TODO add your handling code here:
-        frmEstoqueQuantidade frm = new frmEstoqueQuantidade();
-        frm.setVisible(true);
-    }//GEN-LAST:event_jMenuItem11ActionPerformed
-
     private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
-        // TODO add your handling code here:
         jdLiberarCaixa lib = new jdLiberarCaixa(null, true);
         lib.setVisible(true);
         if (lib.op == 1) {
@@ -461,87 +252,13 @@ public class Menu extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem12ActionPerformed
 
-    private void jMenuItem13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem13ActionPerformed
-        // TODO add your handling code here:
-        jdLiberarCaixa jd = new jdLiberarCaixa(null, true);
-        jd.setVisible(true);
-        if (jd.op == 1) {
-            frmRobotTest frm = new frmRobotTest();
-            frm.setVisible(true);
-        }
-    }//GEN-LAST:event_jMenuItem13ActionPerformed
-
-    private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
-        // TODO add your handling code here:
-        jdLiberarCaixa jd = new jdLiberarCaixa(null, true);
-        jd.setVisible(true);
-        if (jd.op == 1) {
-            new Thread() {
-                @Override
-                public void run() {
-                    progressBar.setVisible(true);
-                    frmRobotEstoque frm = new frmRobotEstoque(progressBar);
-                    frm.setVisible(true);
-                    progressBar.setVisible(false);
-                }
-            }.start();
-        }
-    }//GEN-LAST:event_jMenuItem14ActionPerformed
-
-    private void jMenuItem15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem15ActionPerformed
-        // TODO add your handling code here:
-        mudarTema();
-    }//GEN-LAST:event_jMenuItem15ActionPerformed
-
-    private void jMenuItem16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem16ActionPerformed
-        // TODO add your handling code here:
-        frmColor frm = new frmColor(jDesktopPane1);
-        frm.setVisible(true);
-    }//GEN-LAST:event_jMenuItem16ActionPerformed
-
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        // TODO add your handling code here:
         logoini();
     }//GEN-LAST:event_formWindowOpened
 
-    public void mudarTema() {
-        jdTema jd = new jdTema(null, true);
-        jd.setVisible(true);
-        if (jd.op > 0) {
-            String tema = null;
-            switch (jd.op) {
-                case 1:
-                    tema = "Metal";
-                    break;
-                case 2:
-                    tema = "Nimbus";
-                    break;
-                case 3:
-                    tema = "CDE/Motif";
-                    break;
-                case 4:
-                    tema = "Windows";
-                    break;
-                case 5:
-                    tema = "Windows Classic";
-                    break;
-            }
-
-            try {
-                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                    if (tema.equals(info.getName())) {
-                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                        break;
-
-                    }
-                }
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-                java.util.logging.Logger.getLogger(Menu.class
-                        .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            }
-            SwingUtilities.updateComponentTreeUI(this);
-        }
-    }
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        new ExchangeJF().setVisible(true);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -590,37 +307,21 @@ public class Menu extends javax.swing.JFrame {
     public javax.swing.JLabel atualUser;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
-    private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem10;
-    private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem12;
-    private javax.swing.JMenuItem jMenuItem13;
-    private javax.swing.JMenuItem jMenuItem14;
-    private javax.swing.JMenuItem jMenuItem15;
-    private javax.swing.JMenuItem jMenuItem16;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JMenuItem jMenuItem8;
-    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel jcr;
-    private javax.swing.JProgressBar progressBar;
     // End of variables declaration//GEN-END:variables
-    
-    private void logoini(){
+
+    private void logoini() {
         ImageIcon icon = new ImageIcon("src/Imagens/jcr.png");
         icon.setImage(icon.getImage().getScaledInstance(jcr.getWidth(), jcr.getHeight(), 1));
         jcr.setIcon(icon);

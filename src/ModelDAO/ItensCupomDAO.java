@@ -7,6 +7,7 @@ package ModelDAO;
 
 import JDBC.ConnectionFactoryFirebird;
 import ModelBean.Produto;
+import br.SupermercadoCorreia.Estoque.Bean.Product;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,6 +40,7 @@ public class ItensCupomDAO {
             rs = stmt.executeQuery();
             while (rs.next()) {
                 cd = rs.getString("CD_MOVIMENTO");
+                break;
             }
         } catch (SQLException ex) {
             Logger.getLogger(ItensCupomDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -48,20 +50,20 @@ public class ItensCupomDAO {
         return cd;
     }
 
-    public List<Produto> getItensCupom(String cdMov) {
+    public List<Product> getCupom(String cdMov) {
         String sql = "SELECT CD_MOVIMENTO, CD_REFER_PRO, QT_ITE_PRO FROM ITENS_DOC WHERE ITENS_DOC.CD_MOVIMENTO = ?";
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        List<Produto> produtos = new ArrayList<>();
+        List<Product> products = new ArrayList<>();
         try {
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, Integer.parseInt(cdMov));
             rs = stmt.executeQuery();
             while (rs.next()) {
-                Produto prod = new Produto();
-                prod.setCodigo(rs.getString("CD_REFER_PRO"));
-                prod.setQtd(rs.getDouble("QT_ITE_PRO"));
-                produtos.add(prod);
+                Product prod = new Product();
+                prod.setCode(rs.getString("CD_REFER_PRO"));
+                prod.setAmount(rs.getDouble("QT_ITE_PRO"));
+                products.add(prod);
             }
         } catch (SQLException ex) {
             System.err.println("ERRO ao tentar capturar itens do cupom no firebird: " + ex);
@@ -69,7 +71,7 @@ public class ItensCupomDAO {
         } finally {
             ConnectionFactoryFirebird.closeConnection(con, stmt, rs);
         }
-        return produtos;
+        return products;
     }
 
 }

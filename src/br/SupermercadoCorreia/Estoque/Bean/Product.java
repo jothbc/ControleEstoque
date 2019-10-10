@@ -23,7 +23,7 @@ public class Product {
     private String provider;
     private int group_db;
     private String unity;
-    
+
     public Product() {
     }
 
@@ -194,5 +194,9 @@ public class Product {
     public void setAmount_db(double amount_db) {
         this.amount_db = amount_db;
     }
-    
+
+    public String toString() {
+        return this.description;
+    }
+
 }
