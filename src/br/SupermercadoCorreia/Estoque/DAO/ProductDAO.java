@@ -9,12 +9,14 @@ import JDBC.ConnectionFactoryFirebird;
 import JDBC.ConnectionFactoryMySQL;
 import br.SupermercadoCorreia.Estoque.Bean.Product;
 import funcoes.CDate;
+import funcoes.CDbl;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -45,6 +47,10 @@ public class ProductDAO {
     public final static String BAKERY_TABLE = "bakery";
     public final static String EXCHANGE_TABLE = "exchange";
     public final static String BREAK_TABLE = "break";
+
+    public final static long SECOND_MILES = 1000;
+    public final static long MINUTE_MILES = SECOND_MILES * 60;
+    public final static long HOUR_MILES = MINUTE_MILES * 60;
 
     public List<Product> getAllFB(JProgressBar j) throws Exception {
         j.setMinimum(0);
@@ -363,7 +369,7 @@ public class ProductDAO {
             stmt = con.prepareStatement(sql);
             stmt.setBigDecimal(1, BigDecimal.valueOf(Long.parseLong(cd)));
             stmt.setString(2, desc);
-            stmt.setDouble(3, amount);
+            stmt.setDouble(3, CDbl.CDblDuasCasas(amount));
             stmt.execute();
             return true;
         } catch (SQLException ex) {
@@ -379,7 +385,7 @@ public class ProductDAO {
         sql = "UPDATE type_use SET " + column + "=" + column + " + ? WHERE code = ?";
         try {
             stmt = con.prepareStatement(sql);
-            stmt.setDouble(1, amount);
+            stmt.setDouble(1, CDbl.CDblDuasCasas(amount));
             stmt.setBigDecimal(2, BigDecimal.valueOf(Long.parseLong(code)));
             stmt.executeUpdate();
             return true;
@@ -450,13 +456,62 @@ public class ProductDAO {
             stmt.setString(1, usuario);
             stmt.setBigDecimal(2, BigDecimal.valueOf(Long.parseLong(code)));
             stmt.setString(3, description);
-            stmt.setDouble(4, amount);
+            stmt.setDouble(4, CDbl.CDblDuasCasas(amount));
             stmt.setString(5, column);
             stmt.setString(6, (CDate.getHoraAtualPTBR() + " " + CDate.getHojePTBR().replaceAll("/", "-")));
             stmt.execute();
         } catch (SQLException ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println(ex);
+        } finally {
+            ConnectionFactoryMySQL.closeConnection(con, stmt);
+        }
+    }
+
+    public boolean refresh_is_needed(long time_lapse) {
+        sql = "SELECT * FROM log_last_refresh WHERE data = ?";
+        con = ConnectionFactoryMySQL.getConnection();
+        try {
+            stmt = con.prepareStatement(sql);
+            stmt.setString(1, CDate.PTBRtoMYSQL(CDate.getHojePTBR()));
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                rs.last();
+                String data = CDate.MYSQLtoPTBR(rs.getString("data"));
+                String[] hora = rs.getString("hora").split(":");
+                Calendar banco = Calendar.getInstance();
+                banco.setTime(CDate.PTBRtoDate(data));
+                banco.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hora[0]));
+                banco.set(Calendar.MINUTE, Integer.parseInt(hora[1]));
+                banco.set(Calendar.SECOND, Integer.parseInt(hora[2]));
+                Calendar agora = Calendar.getInstance();
+
+                if (agora.getTimeInMillis() - banco.getTimeInMillis() > time_lapse) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return true;
+    }
+
+    public boolean refresh_now() {
+        sql = "INSERT INTO log_last_refresh(data,hora) VALUES (?,?)";
+        con = ConnectionFactoryMySQL.getConnection();
+        try {
+            Calendar cal = Calendar.getInstance();
+            stmt = con.prepareStatement(sql);
+            stmt.setString(1, CDate.PTBRtoMYSQL(CDate.getHojePTBR()));
+            stmt.setString(2, CDate.getHoraAtualPTBR());
+            stmt.execute();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         } finally {
             ConnectionFactoryMySQL.closeConnection(con, stmt);
         }

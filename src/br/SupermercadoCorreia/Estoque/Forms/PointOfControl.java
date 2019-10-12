@@ -40,6 +40,10 @@ public class PointOfControl extends javax.swing.JFrame {
         tb = (DefaultTableModel) jTable1.getModel();
         products = new ArrayList<>();
         lbl_status.setText("carregando...");
+        if (new ProductDAO().refresh_is_needed(ProductDAO.HOUR_MILES)) {
+            new RefreshProducts_JD(null, true).setVisible(true);
+            new ProductDAO().refresh_now();
+        }
         carregarProdutosDoMysqlEmVariavel();
     }
 
@@ -452,14 +456,15 @@ public class PointOfControl extends javax.swing.JFrame {
             double amount;
             String column = jd.getColumn();
             String description;
-            if (column.equals(ProductDAO.EXCHANGE_TABLE)) {
+            if (column.equals(ProductDAO.EXCHANGE_TABLE) && new ProductDAO().refresh_is_needed(ProductDAO.HOUR_MILES)) {
                 lbl_status.setBackground(Color.GREEN);
-                lbl_status.setText("Atualizando");
+                lbl_status.setText("Obtendo Fornecedor");
                 products = new ProductDAO().getAllFB_Provider(products, new JProgressBar());
                 lbl_status.setText("Pronto");
                 lbl_status.setBackground(Color.WHITE);
+                new ProductDAO().refresh_now();
             }
-            List<String> list_string = new ArrayList<>();
+            List<String> exchange_list = new ArrayList<>();
             while (jTable1.getRowCount() > 0) {
                 code = (String) jTable1.getValueAt(0, 0);
                 description = (String) jTable1.getValueAt(0, 1);
@@ -469,20 +474,21 @@ public class PointOfControl extends javax.swing.JFrame {
                         JOptionPane.showMessageDialog(null, "Erro ao tentar fazer update no banco de dados.", "ERRO", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    list_string.add(code);
                 } else {
                     if (!new ProductDAO().insert_type_use(code, description, amount, column)) {
                         JOptionPane.showMessageDialog(null, "Erro ao tentar fazer insert no banco de dados.", "ERRO", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    list_string.add(code);
                 }
-                new ProductDAO().insert_log_type_use(Menu.usuario ,code, description, amount, column);
+                if (column.equals(ProductDAO.EXCHANGE_TABLE)) {
+                    exchange_list.add(code);
+                }
+                new ProductDAO().insert_log_type_use(Menu.usuario, code, description, amount, column);
                 tb.removeRow(0);
             }
             if (column.equals(ProductDAO.EXCHANGE_TABLE)) {
                 String temp = "ULTIMOS FORNECEDORES\n\n";
-                for (String s : list_string) {
+                for (String s : exchange_list) {
                     for (Product p : products) {
                         if (p.getCode().equals(s)) {
                             temp += p.getDescription() + "     " + p.getProvider() + "\n";

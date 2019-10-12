@@ -21,6 +21,8 @@ public class ProductDAOTest {
 
     @Test
     public void testSomeMethod() {
+        //new ProductDAO().refresh_now();
+        System.out.println(new ProductDAO().refresh_is_needed(ProductDAO.HOUR_MILES));
         
     }
     
