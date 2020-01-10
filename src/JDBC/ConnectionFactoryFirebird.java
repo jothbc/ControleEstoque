@@ -26,7 +26,7 @@ public class ConnectionFactoryFirebird {
      *
      */
     private static final String DRIVER = "org.firebirdsql.jdbc.FBDriver";
-    private static final String URL = "jdbc:firebirdsql:192.168.1.158:C:/IBS/Sisfatura/SISFATURA.FDB?lc_ctype=UNICODE_FSS";
+    private static final String URL = "jdbc:firebirdsql:192.168.0.158:C:/IBS/Sisfatura/SISFATURA.FDB?lc_ctype=UNICODE_FSS";
     private static final String USER = "SYSDBA";
     private static final String PASS = "masterkey";
 

@@ -7,15 +7,23 @@ package br.SupermercadoCorreia.Estoque.Forms;
 
 import br.SupermercadoCorreia.Estoque.Bean.Product;
 import br.SupermercadoCorreia.Estoque.DAO.ProductDAO;
-import br.SupermercadoCorreia.Estoque.JDialogs.RefreshProducts_JD;
 import funcoes.CDbl;
 import funcoes.RobotJCR;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -23,17 +31,20 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ExchangeJF extends javax.swing.JFrame {
 
-    List<Product> products_exchange;
-    List<Product> products;
+    private List<Product> products_exchange;
+    private List<Product> products;
+    private List<Product> rel;
+    private Thread thread;
+    private boolean isRunning = false;
 
     /**
      * Creates new form ExchangeJF
      */
     public ExchangeJF() {
         initComponents();
-        new RefreshProducts_JD(null, true).setVisible(true);
         products_exchange = new ProductDAO().findAll_Type_Use(ProductDAO.EXCHANGE_TABLE);
         products = new ProductDAO().findAll();
+        products = new ProductDAO().getAllFB_Provider(products, new JProgressBar());
         for (Product p : products_exchange) {
             for (Product pp : products) {
                 if (pp.getCode().equals(p.getCode())) {
@@ -41,7 +52,6 @@ public class ExchangeJF extends javax.swing.JFrame {
                 }
             }
         }
-
         preencherTabela();
     }
 
@@ -67,6 +77,8 @@ public class ExchangeJF extends javax.swing.JFrame {
         btn_removeExchange = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         delay = new javax.swing.JSpinner();
+        btn_robot1 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -147,6 +159,21 @@ public class ExchangeJF extends javax.swing.JFrame {
 
         delay.setModel(new javax.swing.SpinnerNumberModel(50, 0, 200, 1));
 
+        btn_robot1.setText("Parar Robo");
+        btn_robot1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_robot1ActionPerformed(evt);
+            }
+        });
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/1x/notes.png"))); // NOI18N
+        jButton1.setText("PDF");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -155,28 +182,34 @@ public class ExchangeJF extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(lbl_linhas, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lbl_total, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(42, 42, 42))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(txt_desc, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txt_prov, javax.swing.GroupLayout.PREFERRED_SIZE, 361, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2))
-                        .addGap(0, 68, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lbl_linhas, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(delay, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txt_prov, javax.swing.GroupLayout.PREFERRED_SIZE, 361, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton1)))
+                        .addContainerGap())
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(delay, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btn_removeExchange, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lbl_total, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_robot, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap())
+                        .addComponent(btn_robot, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btn_robot1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_removeExchange))
+                        .addGap(16, 16, 16))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -184,29 +217,33 @@ public class ExchangeJF extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(delay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txt_desc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txt_prov, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txt_prov, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lbl_total)
                             .addComponent(lbl_linhas))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-                        .addComponent(btn_robot))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(delay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_removeExchange)
-                .addContainerGap())
+                            .addComponent(btn_robot)
+                            .addComponent(btn_robot1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btn_removeExchange)
+                        .addGap(0, 11, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -244,11 +281,15 @@ public class ExchangeJF extends javax.swing.JFrame {
     }//GEN-LAST:event_jTable1KeyPressed
 
     private void btn_robotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_robotActionPerformed
-        new Thread(() -> {
+        isRunning = true;
+        thread = new Thread(() -> {
             try {
                 RobotJCR.AltTab(50);
                 Thread.sleep(2000);
                 for (int x = 0; x < jTable1.getRowCount(); x++) {
+                    if (!isRunning) {
+                        break;
+                    }
                     try {
                         String codigo = getCodeSelected(x);
                         String un = "UN";
@@ -284,7 +325,8 @@ public class ExchangeJF extends javax.swing.JFrame {
                 Logger.getLogger(ExchangeJF.class.getName()).log(Level.SEVERE, null, ex);
             }
             btn_removeExchange.setEnabled(true);
-        }).start();
+        });
+        thread.start();
     }//GEN-LAST:event_btn_robotActionPerformed
 
     private void btn_removeExchangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_removeExchangeActionPerformed
@@ -306,6 +348,14 @@ public class ExchangeJF extends javax.swing.JFrame {
 
         preencherTabela();
     }//GEN-LAST:event_btn_removeExchangeActionPerformed
+
+    private void btn_robot1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_robot1ActionPerformed
+        isRunning = false;
+    }//GEN-LAST:event_btn_robot1ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        toPDF();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -345,7 +395,9 @@ public class ExchangeJF extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_removeExchange;
     private javax.swing.JButton btn_robot;
+    private javax.swing.JButton btn_robot1;
     private javax.swing.JSpinner delay;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -364,16 +416,39 @@ public class ExchangeJF extends javax.swing.JFrame {
         String filter1 = txt_desc.getText().toUpperCase(),
                 filter2 = txt_prov.getText().toUpperCase();
         double total = 0;
-
+        boolean add;
+        rel = new ArrayList<>();
+        products_exchange.sort((p_1, p_2) -> {
+            Product p = p_1;
+            Product p2 = p_2;
+            return p.getProvider().compareToIgnoreCase(p2.getProvider());
+        });
         for (Product p : products_exchange) {
+            add = false;
             if (filter1.equals("") && filter2.equals("")) {
-                tb.addRow(new Object[]{p.getCode(), p.getDescription(), p.getProvider(), p.getAmount()});
-                total += p.getAmount();
+                add = true;
+            } else if (!filter1.equals("")) {
+                String[] ss = filter1.split(" ");
+                boolean contain = true;
+                for (String s : ss) {
+                    if (!p.getDescription().toUpperCase().contains(s)) {
+                        contain = false;
+                    }
+                }
+                if (contain) {
+                    add = true;
+                }
+
             } else if (p.getDescription().toUpperCase().contains(filter1) && p.getProvider().toUpperCase().contains(filter2)) {
+                add = true;
+            }
+            if (add) {
                 tb.addRow(new Object[]{p.getCode(), p.getDescription(), p.getProvider(), p.getAmount()});
                 total += p.getAmount();
+                rel.add(p);
             }
         }
+
         lbl_linhas.setText("Linhas: " + jTable1.getRowCount());
         lbl_total.setText("Total: " + CDbl.CDblDuasCasasString(total));
         btn_removeExchange.setEnabled(false);
@@ -391,6 +466,26 @@ public class ExchangeJF extends javax.swing.JFrame {
             return Integer.toString((int) amount);
         }
         return Double.toString(CDbl.CDblDuasCasas(amount));
+    }
+
+    private void toPDF() {
+        String src = "jasper/troca.jasper";
+        //String src = "C:/troca.jasper";
+        JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(rel);
+        HashMap<String, Object> hashMap = new HashMap<>();
+        double total = 0;
+        for (Product p : rel) {
+            total += p.getAmount() * p.getCost_value();
+        }
+        hashMap.put("total", total);
+        try {
+            JasperPrint jasperPrint = JasperFillManager.fillReport(src, hashMap, beanCollectionDataSource);
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint);
+            jasperViewer.setTitle("Trocas");
+            jasperViewer.setVisible(true);
+        } catch (JRException ex) {
+            Logger.getLogger(ExchangeJF.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

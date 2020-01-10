@@ -491,7 +491,7 @@ public class RobotJF extends javax.swing.JFrame {
                             RobotJCR.executar(KeyEvent.VK_ENTER, 50);
 
                             Product p = new Product();
-                            p.setCode(codigo);
+                            //p.setAmount(getAmountSelected(count));
                             products.add(p);
 
                             table.removeRow(count);

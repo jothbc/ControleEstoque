@@ -5,21 +5,31 @@
  */
 package EstoqueFrms;
 
+import br.SupermercadoCorreia.Estoque.Bean.Product;
+import br.SupermercadoCorreia.Estoque.DAO.ProductDAO;
 import br.SupermercadoCorreia.Estoque.Forms.ExchangeJF;
+import br.SupermercadoCorreia.Estoque.Forms.MobileAccountJF;
 import br.SupermercadoCorreia.Estoque.Forms.PointOfControl;
 import br.SupermercadoCorreia.Estoque.Forms.ProductsLaunchedJF;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.net.URL;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author User
  */
-public class Menu extends javax.swing.JFrame {
+public final class Menu extends javax.swing.JFrame {
 
     public static String usuario;
+    public boolean isRunning;
+    public static List<Product> products;
+    public static boolean list_already = false;
 
     /**
      * Creates new form Menu
@@ -34,6 +44,17 @@ public class Menu extends javax.swing.JFrame {
         URL url = this.getClass().getResource("/Imagens/supermercado.png");
         Image imagemTitulo = Toolkit.getDefaultToolkit().getImage(url);
         this.setIconImage(imagemTitulo);
+        if (new ProductDAO().refresh_is_needed(ProductDAO.HOUR_MILES)) {
+            new Thread(() -> {
+                refreshProducts();
+            }).start();
+        } else {
+            jLabel2.setText("Pronto!");
+            products = new ProductDAO().findAll();
+            jProgressBar1.setValue(100);
+            list_already = true;
+        }
+        timeControl();
     }
 
     public String getUser() {
@@ -53,9 +74,10 @@ public class Menu extends javax.swing.JFrame {
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jPanel2 = new javax.swing.JPanel();
         atualUser = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         jcr = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jProgressBar1 = new javax.swing.JProgressBar();
+        jLabel2 = new javax.swing.JLabel();
         jMenuBar2 = new javax.swing.JMenuBar();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -64,6 +86,7 @@ public class Menu extends javax.swing.JFrame {
         jMenu6 = new javax.swing.JMenu();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem12 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Controle de Baixas - Supermercado Correia");
@@ -98,53 +121,52 @@ public class Menu extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jcr.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/jcr.png"))); // NOI18N
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/oie_transparent.png"))); // NOI18N
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1041, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(90, 90, 90)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(50, Short.MAX_VALUE))
-        );
+        jProgressBar1.setStringPainted(true);
 
-        jcr.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/jcr.png"))); // NOI18N
+        jLabel2.setText("jLabel2");
 
         jDesktopPane1.setLayer(jPanel2, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jDesktopPane1.setLayer(jPanel3, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jDesktopPane1.setLayer(jcr, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jDesktopPane1.setLayer(jLabel1, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jDesktopPane1.setLayer(jProgressBar1, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jDesktopPane1.setLayer(jLabel2, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
         jDesktopPane1.setLayout(jDesktopPane1Layout);
         jDesktopPane1Layout.setHorizontalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1061, Short.MAX_VALUE)
             .addGroup(jDesktopPane1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jcr, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jDesktopPane1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jDesktopPane1Layout.setVerticalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jDesktopPane1Layout.createSequentialGroup()
-                .addGap(127, 127, 127)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
                 .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jcr, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jDesktopPane1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jcr, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jDesktopPane1Layout.createSequentialGroup()
+                        .addGap(66, 66, 66)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(256, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -210,6 +232,15 @@ public class Menu extends javax.swing.JFrame {
         });
         jMenu6.add(jMenuItem12);
 
+        jMenuItem2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/bullet_feed.png"))); // NOI18N
+        jMenuItem2.setText("Mac Wifi");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu6.add(jMenuItem2);
+
         jMenuBar2.add(jMenu6);
 
         setJMenuBar(jMenuBar2);
@@ -229,8 +260,9 @@ public class Menu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        PointOfControl p = new PointOfControl();
-        p.setVisible(true);
+        if (list_already) {
+            new PointOfControl().setVisible(true);
+        }
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
@@ -259,6 +291,10 @@ public class Menu extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         new ExchangeJF().setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        new MobileAccountJF().setVisible(true);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -307,17 +343,19 @@ public class Menu extends javax.swing.JFrame {
     public javax.swing.JLabel atualUser;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem12;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
+    private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JLabel jcr;
     // End of variables declaration//GEN-END:variables
 
@@ -325,5 +363,68 @@ public class Menu extends javax.swing.JFrame {
         ImageIcon icon = new ImageIcon("src/Imagens/jcr.png");
         icon.setImage(icon.getImage().getScaledInstance(jcr.getWidth(), jcr.getHeight(), 1));
         jcr.setIcon(icon);
+    }
+
+    public void refreshProducts() {
+        list_already = false;
+        try {
+            products = new ProductDAO().findAll();
+
+            jLabel2.setText("Buscando produtos da IBS...1/4");
+            List<Product> products_kg = new ProductDAO().findAllFBKG(jProgressBar1);
+            //products = new ProductDAO().getAllFB(jProgressBar1);
+
+            jLabel2.setText("Obtendo valores de custos...2/4");
+            products = new ProductDAO().getAllFB_Cost(products_kg, jProgressBar1);
+
+            jLabel2.setText("Obtendo valores de venda...3/4");
+            products = new ProductDAO().getAllFB_Sale(products_kg, jProgressBar1);
+
+            jLabel2.setText("Atualizando produtos pesados...4/4");
+            for (Product p : products) {
+                for (Product kg : products) {
+                    if (p.getCode().equals(kg.getCode())) {
+                        new ProductDAO().updateKG(kg);
+                        break;
+                    }
+                }
+            }
+
+            /*
+            jLabel2.setText("Obtendo ultimo fornecedor... 4/6");
+            products = new ProductDAO().getAllFB_Provider(products, jProgressBar1);
+            jLabel2.setText("Removendo todos os produtos do MySQL...5/6");
+            new ProductDAO().removeAll();
+            jLabel2.setText("Incluindo novos registros no MySQL...6/6");
+            new ProductDAO().refreshAllProduct(products, true, jProgressBar1);
+             */
+            products = new ProductDAO().findAll();
+            new ProductDAO().refreshed_now();
+            list_already = true;
+            jLabel2.setText("Concluido!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void timeControl() {
+        new Thread(() -> {
+            long now;
+            long lastTime = System.currentTimeMillis();
+            isRunning = true;
+            while (isRunning) {
+                System.out.println("timeControl is Running " + System.currentTimeMillis());
+                try {
+                    now = System.currentTimeMillis();
+                    if (now - lastTime > ProductDAO.HOUR_MILES) {
+                        refreshProducts();
+                    }
+                    Thread.sleep(ProductDAO.HOUR_MILES);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }).start();
+
     }
 }

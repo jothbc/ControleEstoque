@@ -15,8 +15,11 @@ import br.SupermercadoCorreia.Estoque.JDialogs.setAmountInPOC;
 import com.sun.glass.events.KeyEvent;
 import funcoes.Util;
 import java.awt.Color;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.table.DefaultTableModel;
@@ -28,7 +31,6 @@ import javax.swing.table.DefaultTableModel;
 public class PointOfControl extends javax.swing.JFrame {
 
     DefaultTableModel tb;
-    List<Product> products;
     double qtd;
 
     /**
@@ -38,13 +40,6 @@ public class PointOfControl extends javax.swing.JFrame {
         initComponents();
         this.setExtendedState(PointOfControl.MAXIMIZED_BOTH);
         tb = (DefaultTableModel) jTable1.getModel();
-        products = new ArrayList<>();
-        lbl_status.setText("carregando...");
-        if (new ProductDAO().refresh_is_needed(ProductDAO.HOUR_MILES)) {
-            new RefreshProducts_JD(null, true).setVisible(true);
-            new ProductDAO().refresh_now();
-        }
-        carregarProdutosDoMysqlEmVariavel();
     }
 
     /**
@@ -153,6 +148,7 @@ public class PointOfControl extends javax.swing.JFrame {
         atualizaProdutosBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/1x/square-download.png"))); // NOI18N
         atualizaProdutosBtn.setText("Atualizar Produtos");
         atualizaProdutosBtn.setBorder(null);
+        atualizaProdutosBtn.setEnabled(false);
         atualizaProdutosBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 atualizaProdutosBtnActionPerformed(evt);
@@ -290,7 +286,7 @@ public class PointOfControl extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void atualizaProdutosBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atualizaProdutosBtnActionPerformed
-        atualizarBancoDeDados();
+        refreshProduct();
     }//GEN-LAST:event_atualizaProdutosBtnActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -304,7 +300,7 @@ public class PointOfControl extends javax.swing.JFrame {
         jd.setVisible(true);
         if (!jd.getProducts().isEmpty()) {
             for (Product p : jd.getProducts()) {
-                for (Product pp : products) {
+                for (Product pp : Menu.products) {
                     if (p.getCode().equals(pp.getCode())) {
                         tb.addRow(new Object[]{pp.getCode(), pp.getDescription(), pp.getSale_value(), p.getAmount()});
                     }
@@ -386,7 +382,7 @@ public class PointOfControl extends javax.swing.JFrame {
             }
             codetxt.setText(Long.toString(Long.parseLong(codetxt.getText())));
             boolean add = false;
-            for (Product p : products) {
+            for (Product p : Menu.products) {
                 if (p.getCode().equals(codetxt.getText())) {
                     tb.addRow(new Object[]{p.getCode(), p.getDescription(), p.getSale_value(), qtd});
                     desctxt.setText(p.getDescription());
@@ -396,7 +392,9 @@ public class PointOfControl extends javax.swing.JFrame {
             if (!add) {
                 int op = JOptionPane.showOptionDialog(null, "Produto não encontrado.\nTem certeza que o código esta correto?\nCaso a opção for SIM a busca sera atualizada.", "Código não encontrado", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
                 if (op == JOptionPane.YES_OPTION) {
-                    atualizarBancoDeDados();
+                    searchProductOnFirebird(codetxt.getText());
+                    incluirNaTabela();
+                    return;
                 }
             }
 
@@ -415,7 +413,7 @@ public class PointOfControl extends javax.swing.JFrame {
             valor_ = cd.substring(7);
             codetxt.setText(Long.toString(Long.parseLong(cd_)));
             double valor = Double.parseDouble(valor_) / 1000.00;
-            for (Product p : products) {
+            for (Product p : Menu.products) {
                 if (p.getCode().equals(codetxt.getText())) {
                     this.qtd = (double) valor / p.getSale_value();
                     System.out.println(p.getSale_value());
@@ -427,22 +425,11 @@ public class PointOfControl extends javax.swing.JFrame {
         return false;
     }
 
-    private void carregarProdutosDoMysqlEmVariavel() {
-        lbl_status.setText("atualizando...");
-        products = new ProductDAO().findAll();
-        lbl_status.setText("pronto!");
-    }
-
     private void removerLinha() {
         if (jTable1.getSelectedRow() < 0) {
             return;
         }
         tb.removeRow(jTable1.getSelectedRow());
-    }
-
-    private void atualizarBancoDeDados() {
-        new RefreshProducts_JD(this, true).setVisible(true);
-        carregarProdutosDoMysqlEmVariavel();
     }
 
     private void finalizar() {
@@ -459,10 +446,10 @@ public class PointOfControl extends javax.swing.JFrame {
             if (column.equals(ProductDAO.EXCHANGE_TABLE) && new ProductDAO().refresh_is_needed(ProductDAO.HOUR_MILES)) {
                 lbl_status.setBackground(Color.GREEN);
                 lbl_status.setText("Obtendo Fornecedor");
-                products = new ProductDAO().getAllFB_Provider(products, new JProgressBar());
+                Menu.products = new ProductDAO().getAllFB_Provider(Menu.products, new JProgressBar());
                 lbl_status.setText("Pronto");
                 lbl_status.setBackground(Color.WHITE);
-                new ProductDAO().refresh_now();
+                new ProductDAO().refreshed_now();
             }
             List<String> exchange_list = new ArrayList<>();
             while (jTable1.getRowCount() > 0) {
@@ -489,7 +476,7 @@ public class PointOfControl extends javax.swing.JFrame {
             if (column.equals(ProductDAO.EXCHANGE_TABLE)) {
                 String temp = "ULTIMOS FORNECEDORES\n\n";
                 for (String s : exchange_list) {
-                    for (Product p : products) {
+                    for (Product p : Menu.products) {
                         if (p.getCode().equals(s)) {
                             temp += p.getDescription() + "     " + p.getProvider() + "\n";
                             break;
@@ -513,12 +500,30 @@ public class PointOfControl extends javax.swing.JFrame {
     }
 
     private void buscar(String text) {
-        SearchProductJD jd = new SearchProductJD(null, true, text, products);
+        SearchProductJD jd = new SearchProductJD(null, true, text, Menu.products);
         jd.setVisible(true);
         if (jd.getProduct() != null) {
             codetxt.setText(jd.getProduct().getCode());
         } else {
             codetxt.setText("");
+        }
+    }
+
+    @Deprecated
+    private void refreshProduct() {
+        new RefreshProducts_JD(null, true).setVisible(true);
+        Menu.products = new ProductDAO().findAll();
+    }
+
+    private void searchProductOnFirebird(String code) {
+        Product prod_search = new ProductDAO().searchProductInFB(code);
+        if (prod_search != null) {
+            try {
+                new ProductDAO().addProduct(prod_search);
+                Menu.products = new ProductDAO().findAll();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, ex);
+            }
         }
     }
 }

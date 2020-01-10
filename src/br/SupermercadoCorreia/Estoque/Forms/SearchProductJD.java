@@ -177,9 +177,19 @@ public class SearchProductJD extends javax.swing.JDialog {
     private void buscar() {
         list.removeAllElements();
         for (Product p : product_list) {
-            if (p.getDescription().contains(txt_search.getText().toUpperCase())) {
+            boolean add = true;
+            String[] desc= txt_search.getText().split(" ");
+            for(String s:desc){
+                if(!p.getDescription().contains(s.toUpperCase())){
+                    add=false;
+                }
+            }
+            if(add){
                 list.addElement(p);
             }
+//            if (p.getDescription().contains(txt_search.getText().toUpperCase())) {
+//                list.addElement(p);
+//            }
         }
     }
 

@@ -21,9 +21,11 @@ public class ProductDAOTest {
 
     @Test
     public void testSomeMethod() {
-        //new ProductDAO().refresh_now();
+        //new ProductDAO().refreshed_now();
         System.out.println(new ProductDAO().refresh_is_needed(ProductDAO.HOUR_MILES));
-        
+//        if(new ProductDAO().refresh_is_needed(ProductDAO.HOUR_MILES)){
+//            new ProductDAO().refreshed_now();
+//        }
     }
     
 }

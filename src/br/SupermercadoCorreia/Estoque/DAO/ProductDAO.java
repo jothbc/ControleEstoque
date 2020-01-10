@@ -475,35 +475,41 @@ public class ProductDAO {
             stmt = con.prepareStatement(sql);
             stmt.setString(1, CDate.PTBRtoMYSQL(CDate.getHojePTBR()));
             rs = stmt.executeQuery();
-            while (rs.next()) {
-                rs.last();
-                String data = CDate.MYSQLtoPTBR(rs.getString("data"));
-                String[] hora = rs.getString("hora").split(":");
-                Calendar banco = Calendar.getInstance();
-                banco.setTime(CDate.PTBRtoDate(data));
-                banco.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hora[0]));
-                banco.set(Calendar.MINUTE, Integer.parseInt(hora[1]));
-                banco.set(Calendar.SECOND, Integer.parseInt(hora[2]));
-                Calendar agora = Calendar.getInstance();
-
-                if (agora.getTimeInMillis() - banco.getTimeInMillis() > time_lapse) {
-                    return true;
-                }
+            rs.first();
+            if (!rs.first()) {
+                return true;
             }
-            return false;
+            String data = CDate.MYSQLtoPTBR(rs.getString("data"));
+            String[] hora = rs.getString("hora").split(":");
+            Calendar banco = Calendar.getInstance();
+            banco.setTime(CDate.PTBRtoDate(data));
+            banco.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hora[0]));
+            banco.set(Calendar.MINUTE, Integer.parseInt(hora[1]));
+            banco.set(Calendar.SECOND, Integer.parseInt(hora[2]));
+            Calendar agora = Calendar.getInstance();
+            Date agora_ = agora.getTime();
+            Date banco_ = banco.getTime();
+            System.out.println(agora_);
+            System.out.println(banco_);
+            if (agora_.getTime() - banco_.getTime() > time_lapse) {
+                System.out.println((agora_.getTime() - banco_.getTime()));
+                return true;
+            }
         } catch (SQLException ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return true;
+        return false;
     }
 
-    public boolean refresh_now() {
-        sql = "INSERT INTO log_last_refresh(data,hora) VALUES (?,?)";
+    public boolean refreshed_now() {
         con = ConnectionFactoryMySQL.getConnection();
         try {
-            Calendar cal = Calendar.getInstance();
+            sql = "TRUNCATE TABLE log_last_refresh";
+            stmt = con.prepareStatement(sql);
+            stmt.execute();
+            sql = "INSERT INTO log_last_refresh(data,hora) VALUES (?,?)";
             stmt = con.prepareStatement(sql);
             stmt.setString(1, CDate.PTBRtoMYSQL(CDate.getHojePTBR()));
             stmt.setString(2, CDate.getHoraAtualPTBR());
@@ -515,5 +521,85 @@ public class ProductDAO {
         } finally {
             ConnectionFactoryMySQL.closeConnection(con, stmt);
         }
+    }
+
+    public List<Product> findAllFBKG(JProgressBar j) throws Exception {
+        j.setMinimum(0);
+        j.setValue(0);
+        con = ConnectionFactoryFirebird.getConnection();
+        List<Product> array = new ArrayList<>();
+        sql = "SELECT PRODUTO.CD_REF,CD_GRUPO,DS_PROD,AB_UNIDADE,QT_PROD FROM PRODUTO, ESTOQUE WHERE PRODUTO.CD_REF = ESTOQUE.CD_REF AND AB_UNIDADE = 'KG' ORDER BY CD_REF";
+        try {
+            stmt = con.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            j.setMaximum(rs.getFetchSize() + 1);
+            while (rs.next()) {
+                Product p = new Product();
+                p.setCode(rs.getString("CD_REF"));
+                p.setGroup_db(rs.getInt("CD_GRUPO"));
+                p.setDescription(rs.getString("DS_PROD").replaceAll("'", " "));
+                p.setUnity(rs.getString("AB_UNIDADE"));
+                p.setAmount_db(rs.getDouble("QT_PROD"));
+                array.add(p);
+                j.setValue(j.getValue() + 1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new Exception("Não foi possível obter os protudos da base de dados da IBS.");
+        } finally {
+            ConnectionFactoryFirebird.closeConnection(con, stmt, rs);
+        }
+        return array;
+    }
+
+    public void updateKG(Product p) {
+        con = ConnectionFactoryMySQL.getConnection();
+        sql = "UPDATE product SET sale = ?, cost = ? WHERE code = ?";
+        try {
+            stmt = con.prepareStatement(sql);
+            stmt.setDouble(1, p.getSale_value());
+            stmt.setDouble(2, p.getCost_value());
+            stmt.setBigDecimal(3, BigDecimal.valueOf(Long.parseLong(p.getCode())));
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectionFactoryMySQL.closeConnection(con, stmt);
+        }
+    }
+
+    public Product searchProductInFB(String code) {
+        try {
+            List<Product> allProducts = getAllFB(new JProgressBar());
+            for (Product p : allProducts) {
+                if (p.getCode().equals(code)) {
+                    List<Product> temp = new ArrayList<>();
+                    temp.add(p);
+                    temp = getAllFB_Sale(temp, new JProgressBar());
+                    temp = getAllFB_Cost(temp, new JProgressBar());
+                    temp = getAllFB_Provider(temp, new JProgressBar());
+                    return temp.get(0);
+                }
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public void addProduct(Product p) throws SQLException {
+        con = ConnectionFactoryMySQL.getConnection();
+        sql = "INSERT INTO product (code,description,sale,cost,un,amount,ID_GROUP_FIREBIRD,provider) VALUES(?,?,?,?,?,?,?,?)";
+        stmt = con.prepareStatement(sql);
+        stmt.setBigDecimal(1, BigDecimal.valueOf(Long.parseLong(p.getCode())));
+        stmt.setString(2, p.getDescription());
+        stmt.setDouble(3, p.getSale_value());
+        stmt.setDouble(4, p.getCost_value());
+        stmt.setString(5, p.getUnity());
+        stmt.setDouble(6, p.getAmount_db());
+        stmt.setInt(7, p.getGroup_db());
+        stmt.setString(8, p.getProvider() != null ? p.getProvider() : "não encontrado");
+        stmt.execute();
+        ConnectionFactoryMySQL.closeConnection(con, stmt);
     }
 }

@@ -22,7 +22,8 @@ import java.sql.SQLException;
 public class ConnectionFactoryMySQL {
 
     private static final String DRIVER = "com.mysql.jdbc.Driver";
-    private static final String URL = "jdbc:mysql://192.168.1.158/estoque";
+    private static final String IP = "192.168.0.158";
+    private static final String URL = "jdbc:mysql://" + IP + "/estoque";
     private static final String USER = "correia";
     private static final String PASS = "46444948";
 
@@ -65,5 +66,9 @@ public class ConnectionFactoryMySQL {
             }
         }
         closeConnection(con, stmt);
+    }
+
+    public static String getIPServer() {
+        return ConnectionFactoryMySQL.IP;
     }
 }
